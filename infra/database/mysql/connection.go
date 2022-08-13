@@ -12,7 +12,7 @@ type MysqlConnection struct {
 }
 
 func NewMysqlConnection() *sql.DB {
-	connection, err := sql.Open("mysql", "?:?@tcp(127.0.0.1:3306)/?")
+	connection, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:3306)/blogapi")
 	if err != nil {
 		log.Fatal(err.Error())
 	}

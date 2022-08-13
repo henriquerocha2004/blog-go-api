@@ -1,0 +1,23 @@
+version: '2'
+services:
+  blogapi:
+    container_name: blogapi
+    build: .
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "./:/app"
+    shm_size: '2gb'
+    extra_hosts:
+       - "host.docker.internal:host-gateway"
+  blogapi_db:
+    image: mysql:8
+    container_name: blogapi
+    ports:
+      - "3306:3306"
+    volumes:
+      - "/var/lib/mysql"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=blogapi         

@@ -16,5 +16,39 @@ func NewUserAction(userCommand domain.UserCommand) *UserAction {
 }
 
 func (u *UserAction) HandleCreate(userRequest dto.UserRequest) error {
+	user := domain.User{
+		FirstName: userRequest.FirstName,
+		LastName:  userRequest.LastName,
+		Email:     userRequest.Email,
+		PassWord:  userRequest.PassWord,
+	}
+	err := u.userCommand.Create(user)
 
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (u *UserAction) HandleUpdate(userId int64, userRequest dto.UserRequest) error {
+	user := domain.User{
+		FirstName: userRequest.FirstName,
+		LastName:  userRequest.LastName,
+		Email:     userRequest.Email,
+		PassWord:  userRequest.PassWord,
+	}
+
+	err := u.userCommand.Update(userId, user)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (u *UserAction) HandleDelete(userId int64) error {
+	err := u.userCommand.Delete(userId)
+	if err != nil {
+		return err
+	}
+	return nil
 }

@@ -7,7 +7,7 @@ type User struct {
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
 	Email     string `json:"email"`
-	PassWord  string `json:"password"`
+	PassWord  string `json:"password,omitempty"`
 }
 
 func (u *User) HashPassword() (string, error) {
