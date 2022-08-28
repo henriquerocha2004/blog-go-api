@@ -1,76 +1,61 @@
 package mysql_test
 
 import (
-	"database/sql"
 	"testing"
 
 	domain "github.com/henriquerocha2004/blog-go-api/domain/entities"
-	"github.com/henriquerocha2004/blog-go-api/infra/database/mysql"
+	"github.com/henriquerocha2004/blog-go-api/infra/mocks"
 	"github.com/stretchr/testify/suite"
 )
 
 type TestUserSuit struct {
 	suite.Suite
-	connection  *sql.DB
 	commandUser domain.UserCommand
 	queryUser   domain.UserQuery
 }
 
 func newTestUserSuit() *TestUserSuit {
-	return &TestUserSuit{
-		connection: mysql.NewMysqlConnection(),
-	}
+	return &TestUserSuit{}
 }
 
 func TestUserTests(t *testing.T) {
 	suite.Run(t, newTestUserSuit())
 }
 
-func (s *TestUserSuit) SetupSuite() {
-	s.commandUser = mysql.NewUserCommand(s.connection)
-	s.queryUser = mysql.NewUserQuery(s.connection)
-}
-
-func (suite *TestUserSuit) BeforeTest(suiteName, testName string) {
-	suite.connection.Query("TRUNCATE TABLE users")
-}
-
 func (s *TestUserSuit) TestCreateUser() {
-	userCommand := mysql.NewUserCommand(s.connection)
 	user := domain.User{
 		FirstName: "Henrique",
 		LastName:  "Souza",
 		Email:     "rochahenrique18@gmail.com",
 		PassWord:  "Teste123",
 	}
-	err := userCommand.Create(user)
+
+	mockCommand := new(mocks.UserCommand)
+	mockCommand.On("Create", user).Return(nil)
+	s.commandUser = mockCommand
+	err := s.commandUser.Create(user)
 	s.NoError(err)
 }
 
 func (s *TestUserSuit) TestUpdateUser() {
 	user := domain.User{
-		FirstName: "Henrique",
+		FirstName: "José",
 		LastName:  "Souza",
 		Email:     "rochahenrique18@gmail.com",
 		PassWord:  "Teste123",
 	}
+	mockCommand := new(mocks.UserCommand)
+	mockCommand.On("Update", int64(1), user).Return(nil)
 
-	s.commandUser.Create(user)
-
-	user.FirstName = "José"
+	s.commandUser = mockCommand
 	err := s.commandUser.Update(1, user)
 	s.NoError(err)
 }
 
 func (s *TestUserSuit) TestDeleteUser() {
-	user := domain.User{
-		FirstName: "Henrique",
-		LastName:  "Souza",
-		Email:     "rochahenrique18@gmail.com",
-		PassWord:  "Teste123",
-	}
-
-	s.commandUser.Create(user)
+	mockCommand := new(mocks.UserCommand)
+	mockCommand.On("Delete", int64(1)).Return(nil)
+	s.commandUser = mockCommand
 	err := s.commandUser.Delete(1)
 	s.NoError(err)
 }
@@ -83,8 +68,10 @@ func (s *TestUserSuit) TestFindUserById() {
 		PassWord:  "Teste123",
 	}
 
-	s.commandUser.Create(user)
-	userDb, err := s.queryUser.FindById(1)
+	mockQuery := new(mocks.UserQuery)
+	mockQuery.On("FindById", int64(1)).Return(user, nil)
+	s.queryUser = mockQuery
+	userDb, err := s.queryUser.FindById(int64(1))
 
 	s.NoError(err)
 	s.Equal(user.FirstName, userDb.FirstName)
@@ -93,25 +80,26 @@ func (s *TestUserSuit) TestFindUserById() {
 }
 
 func (s *TestUserSuit) TestFindAll() {
-	user := domain.User{
-		FirstName: "Henrique",
-		LastName:  "Souza",
-		Email:     "rochahenrique18@gmail.com",
-		PassWord:  "Teste123",
+	usersMock := []domain.User{
+		{
+			FirstName: "Henrique",
+			LastName:  "Souza",
+			Email:     "rochahenrique18@gmail.com",
+			PassWord:  "Teste123",
+		},
+		{
+			FirstName: "Luciana",
+			LastName:  "Souza",
+			Email:     "luciana@gmail.com",
+			PassWord:  "Teste123",
+		},
 	}
 
-	s.commandUser.Create(user)
+	mockQuery := new(mocks.UserQuery)
+	mockQuery.On("FindAll").Return(&usersMock, nil)
+	s.queryUser = mockQuery
 
-	user = domain.User{
-		FirstName: "Luciana",
-		LastName:  "Souza",
-		Email:     "luciana@gmail.com",
-		PassWord:  "Teste123",
-	}
-
-	s.commandUser.Create(user)
 	users, err := s.queryUser.FindAll()
-
 	s.NoError(err)
 	s.Equal(2, len(*users))
 }

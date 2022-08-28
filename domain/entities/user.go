@@ -8,11 +8,16 @@ type User struct {
 	LastName  string `json:"last_name"`
 	Email     string `json:"email"`
 	PassWord  string `json:"password,omitempty"`
+	CreatedAt string `json:"created_at,omitempty"`
 }
 
 func (u *User) HashPassword() (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(u.PassWord), 14)
 	return string(bytes), err
+}
+
+func (u *User) CheckPassword(providedPassword string) error {
+	return bcrypt.CompareHashAndPassword([]byte(u.PassWord), []byte(providedPassword))
 }
 
 type UserCommand interface {
@@ -23,6 +28,6 @@ type UserCommand interface {
 
 type UserQuery interface {
 	FindById(userId int64) (User, error)
+	FindByEmail(email string) (User, error)
 	FindAll() (*[]User, error)
-	// FindByPostId(postId int64) (User, error)
 }

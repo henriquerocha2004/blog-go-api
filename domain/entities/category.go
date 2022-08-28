@@ -12,7 +12,7 @@ type CategoryCommand interface {
 }
 
 type CategoryQuery interface {
-	FindAll() ([]Category, error)
-	FindById(categoryId int64) (Category, error)
-	FindByPostId(postId int64) (Category, error)
+	FindAll() (*[]Category, error)
+	FindById(categoryId int64) (*Category, error)
+	// FindByPostId(postId int64) (Category, error)
 }

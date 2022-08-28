@@ -6,3 +6,8 @@ type UserRequest struct {
 	Email     string `json:"email" validate:"required"`
 	PassWord  string `json:"password" validate:"required"`
 }
+
+type UserCredentials struct {
+	Email    string `json:"email" validate:"required"`
+	Password string `json:"password" validate:"required"`
+}

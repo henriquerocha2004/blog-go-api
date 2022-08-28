@@ -1,15 +1,8 @@
 FROM golang:1.18
 
 WORKDIR /app
+COPY . ./
 
-COPY ./domain /app/
-COPY ./infra /app/
-COPY .gitignore /app/
-COPY go.mod /app/
-COPY go.sum /app/
-COPY main.go /app/
+RUN curl -sSfL https://raw.githubusercontent.com/cosmtrek/air/master/install.sh | sh -s -- -b $(go env GOPATH)/bin
 
-
-RUN go build -o server
-
-EXPOSE 8080
+ENTRYPOINT [ "air" ]

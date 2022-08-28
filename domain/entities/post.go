@@ -1,10 +1,12 @@
 package domain
 
 type Post struct {
-	Id         int64  `json:"id,omitempty"`
-	Title      string `json:"title"`
-	Content    string `json:"content"`
-	Created_at string `json:"created_at"`
+	Id            int64   `json:"id,omitempty"`
+	Title         string  `json:"title"`
+	Content       string  `json:"content"`
+	CreatedAt     string  `json:"created_at"`
+	UserId        int64   `json:"user_id"`
+	CategoriesIds []int64 `json:"categories_ids"`
 }
 
 type PostCommand interface {
@@ -14,6 +16,6 @@ type PostCommand interface {
 }
 
 type PostQuery interface {
-	SearchById(postId int64) ([]Post, error)
-	SearchByUser(userId int64) ([]Post, error)
+	SearchById(postId int64) (*Post, error)
+	SearchByUser(userId int64) (*[]Post, error)
 }

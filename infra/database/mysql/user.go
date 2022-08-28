@@ -113,3 +113,17 @@ func (usrQry *UserQuery) FindAll() (*[]domain.User, error) {
 	}
 	return &users, nil
 }
+
+func (usrQry *UserQuery) FindByEmail(email string) (domain.User, error) {
+	rows, err := usrQry.connection.Query("SELECT id, first_name, last_name, email, password FROM users WHERE email = ?", email)
+	if err != nil {
+		return domain.User{}, err
+	}
+
+	defer rows.Close()
+	var user domain.User
+	for rows.Next() {
+		rows.Scan(&user.Id, &user.FirstName, &user.LastName, &user.Email, &user.PassWord)
+	}
+	return user, nil
+}
