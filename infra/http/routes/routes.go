@@ -12,6 +12,10 @@ func Register(app *fiber.App) {
 	api := app.Group("/api")
 	api.Post("/auth", di.GetAuthenticateController().Authenticate)
 	api.Post("/user", di.GetUserController().Create)
+	api.Get("/post/:postId/comments", di.GetCommentController().SearchByPost)
+	api.Post("/post/comment", di.GetCommentController().Create)
+	api.Put("/post/comment/:id", di.GetCommentController().Update)
+	api.Delete("/post/comment/:id", di.GetCommentController().Delete)
 
 	admin := api.Group("/admin", auth.CheckAuth)
 	admin.Get("/users", di.GetUserController().FindAll)
@@ -28,4 +32,6 @@ func Register(app *fiber.App) {
 	admin.Delete("/post/:id", di.GetPostController().Delete)
 	admin.Get("/post/:id", di.GetPostController().FindById)
 	admin.Get("/posts/:userId", di.GetPostController().FindByUser)
+	admin.Get("/post/comment/:id", di.GetCommentController().SearchById)
+
 }

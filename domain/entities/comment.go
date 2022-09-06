@@ -15,5 +15,5 @@ type CommentCommand interface {
 
 type CommentQuery interface {
 	FindAllByPost(postId int64) ([]Comment, error)
-	FindById(commentId int64) (Comment, error)
+	FindById(commentId int64) (*Comment, error)
 }

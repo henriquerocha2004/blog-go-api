@@ -20,11 +20,14 @@ type ContainerDependency struct {
 	categoryQuery   domain.CategoryQuery
 	postCommand     domain.PostCommand
 	postQuery       domain.PostQuery
+	commentCommand  domain.CommentCommand
+	commentQuery    domain.CommentQuery
 
 	userController         *controllers.UserController
 	categoryController     *controllers.CategoryController
 	postController         *controllers.PostController
 	authenticateController *controllers.AuthController
+	commentController      *controllers.CommentController
 
 	userHandleAction     *command.UserAction
 	userHandleQuery      *query.UserQuery
@@ -32,6 +35,8 @@ type ContainerDependency struct {
 	categoryHandleQuery  *query.CategoryQuery
 	postHandlerCommand   *command.PostAction
 	postHandlerQuery     *query.PostQuery
+	commentHandlerAction *command.CommentAction
+	commentQueryAction   *query.CommentQuery
 
 	login *auth.Login
 }
@@ -100,6 +105,26 @@ func (c *ContainerDependency) GetPostQuery() domain.PostQuery {
 	return c.postQuery
 }
 
+func (c *ContainerDependency) GetCommentCommand() domain.CommentCommand {
+	if c.commentCommand == nil {
+		c.commentCommand = mysql.NewCommentCommand(
+			c.GetDatabaseConnection(),
+		)
+	}
+
+	return c.commentCommand
+}
+
+func (c *ContainerDependency) GetCommentQuery() domain.CommentQuery {
+	if c.commentQuery == nil {
+		c.commentQuery = mysql.NewCommentQuery(
+			c.GetDatabaseConnection(),
+		)
+	}
+
+	return c.commentQuery
+}
+
 func (c *ContainerDependency) GetPostHandlerQuery() *query.PostQuery {
 	c.postHandlerQuery = query.NewPostQuery(
 		c.GetPostQuery(),
@@ -136,6 +161,20 @@ func (c *ContainerDependency) GetCategoryHandlerQuery() *query.CategoryQuery {
 	return c.categoryHandleQuery
 }
 
+func (c *ContainerDependency) GetCommentHandlerAction() *command.CommentAction {
+	c.commentHandlerAction = command.NewCommentAction(
+		c.GetCommentCommand(),
+	)
+	return c.commentHandlerAction
+}
+
+func (c *ContainerDependency) GetCommentHandlerQuery() *query.CommentQuery {
+	c.commentQueryAction = query.NewCommentQuery(
+		c.GetCommentQuery(),
+	)
+	return c.commentQueryAction
+}
+
 func (c *ContainerDependency) GetPostHandlerCommand() *command.PostAction {
 	c.postHandlerCommand = command.NewPostAction(
 		c.GetPostCommand(),
@@ -169,6 +208,17 @@ func (c *ContainerDependency) GetPostController() *controllers.PostController {
 		)
 	}
 	return c.postController
+}
+
+func (c *ContainerDependency) GetCommentController() *controllers.CommentController {
+	if c.commentController == nil {
+		c.commentController = controllers.NewCommentController(
+			c.GetCommentHandlerAction(),
+			c.GetCommentHandlerQuery(),
+		)
+	}
+
+	return c.commentController
 }
 
 func (c *ContainerDependency) GetAuthenticateController() *controllers.AuthController {
